@@ -1,6 +1,6 @@
 # Faster-than-fast NMF using random projections and Nesterov iterations
 ## by Farouk Yahaya, Matthieu Puigt, Gilles Delmaire, and Gilles Roussel
-# modified by Olivier Vu thanh
+## modified by Olivier Vu thanh
 
 -----
 
