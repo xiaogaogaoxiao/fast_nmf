@@ -14,28 +14,28 @@
 
 % <Inputs>
 %        X : Input data matrix (m x n)
-%        r : Target low-rank
-%
+%        G : Initial G matrix
+%        H : Initial H matrix
+%        Tmax : Max CPU Time (-0.05) in seconds
+
+% <Default values>
 %        MAX_ITER : Maximum number of iterations. Default is 1,000.
 %        MIN_ITER : Minimum number of iterations. Default is 10.
-
 %        TOL : Stopping tolerance. Default is 1e-5. If you want to obtain a more accurate solution, decrease TOL and increase MAX_ITER at the same time.
 
 % <Outputs>
-%        W : Obtained basis matrix (m x r).
+%        G : Obtained basis matrix (m x r).
 %        H : Obtained coefficients matrix (r x n).
-%        T : CPU TIME.
 %        RRE: Relative reconstruction error in each iteration
+%        T : CPU TIME.
 
-
-%        Tmax : CPU time in seconds.
 % Note: another file 'stop_rule.m' should be included under the same
 % directory as this code.
 
 
 
 
-function [W,H,RRE,T]=VANILLA_NeNMF(X,W, H,Tmax)
+function [G,H,RRE,T]=VANILLA_NeNMF(X,G, H,Tmax)
 MinIter=10;
 
 tol=1e-5;
@@ -47,26 +47,26 @@ ITER_MAX=500;      % maximum inner iteration number (Default)
 ITER_MIN=10;        % minimum inner iteration number (Default)
 
 HVt=H*X'; HHt=H*H';
-WtV=W'*X; WtW=W'*W;
+GtV=G'*X; GtG=G'*G;
 
-GradW=W*HHt-HVt';
-GradH=WtW*H-WtV;
+GradG=G*HHt-HVt';
+GradH=GtG*H-GtV;
 
-init_delta=stop_rule([W',H],[GradW',GradH]);
+init_delta=stop_rule([G',H],[GradG',GradH]);
 tolH=max(tol,1e-3)*init_delta;
-tolW=tolH;% Stopping tolerance
+tolG=tolH;% Stopping tolerance
 
 
-W=W';
+G=G';
 k=1;
 tic
-RRE(k) = nmf_norm_fro( X, W', H);
+RRE(k) = nmf_norm_fro( X, G', H);
 T(k) = 0;
 % main loop
 while(toc<= Tmax+0.05)
       
-    % Optimize H with W fixed
-    [H,iterH]=NNLS(H,WtW,WtV,ITER_MIN,ITER_MAX,tolH);
+    % Optimize H with G fixed
+    [H,iterH]=NNLS(H,GtG,GtV,ITER_MIN,ITER_MAX,tolH);
     
     if iterH<=ITER_MIN
         tolH=tolH/10;
@@ -74,15 +74,15 @@ while(toc<= Tmax+0.05)
     
     HHt=H*H';   HVt=H*X';
     
-    % Optimize W with H fixed
-    [W,iterW,GradW]=NNLS(W,HHt,HVt,ITER_MIN,ITER_MAX,tolW);
-    if iterW<=ITER_MIN
-        tolW=tolW/10;
+    % Optimize G with H fixed
+    [G,iterG,GradG]=NNLS(G,HHt,HVt,ITER_MIN,ITER_MAX,tolG);
+    if iterG<=ITER_MIN
+        tolG=tolG/10;
     end
-    WtW=W*W'; WtV=W*X;
-    GradH=WtW*H-WtV;
-    %     HIS.niter=niter+iterH+iterW;
-    delta=stop_rule([W,H],[GradW,GradH]);
+    GtG=G*G'; GtV=G*X;
+    GradH=GtG*H-GtV;
+    %     HIS.niter=niter+iterH+iterG;
+    delta=stop_rule([G,H],[GradG,GradH]);
     % Output running detials
     
     %     % Stopping condition
@@ -92,26 +92,26 @@ while(toc<= Tmax+0.05)
 
     if toc-(k-1)*0.05>=0.05
         k = k+1;
-        RRE(k) = nmf_norm_fro( X, W', H);
+        RRE(k) = nmf_norm_fro( X, G', H);
         T(k) = toc;
     end
     
 end  %end of  loop
 
 
-W=W';
+G=G';
 return;
 
-function [H,iter,Grad]=NNLS(Z,WtW,WtV,iterMin,iterMax,tol)
+function [H,iter,Grad]=NNLS(Z,GtG,GtV,iterMin,iterMax,tol)
 
 
-if ~issparse(WtW)
-    L=norm(WtW);	% Lipschitz constant
+if ~issparse(GtG)
+    L=norm(GtG);	% Lipschitz constant
 else
-    L=norm(full(WtW));
+    L=norm(full(GtG));
 end
 H=Z;    % Initialization
-Grad=WtW*Z-WtV;     % Gradient
+Grad=GtG*Z-GtV;     % Gradient
 alpha1=1;
 
 for iter=1:iterMax
@@ -120,7 +120,7 @@ for iter=1:iterMax
     alpha2=0.5*(1+sqrt(1+4*alpha1^2));
     Z=H+((alpha1-1)/alpha2)*(H-H0);
     alpha1=alpha2;
-    Grad=WtW*Z-WtV;
+    Grad=GtG*Z-GtV;
     
     % Stopping criteria
     if iter>=iterMin
@@ -132,10 +132,10 @@ for iter=1:iterMax
     end
 end
 
-Grad=WtW*H-WtV;
+Grad=GtG*H-GtV;
 
 return;
-function f = nmf_norm_fro(X, W, H)
+function f = nmf_norm_fro(X, G, H)
 % Author : F. Yahaya
 % Date: 13/04/2018
 % Contact: farouk.yahaya@univ-littoral.fr
@@ -145,6 +145,6 @@ function f = nmf_norm_fro(X, W, H)
 % Note: To express the error in dB, you have to compute 10*log10(f)
 %
 
-f = norm(X - W * H,'fro')^2/norm(X,'fro')^2;
+f = norm(X - G * H,'fro')^2/norm(X,'fro')^2;
 
 return;

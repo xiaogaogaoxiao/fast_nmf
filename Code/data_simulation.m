@@ -19,11 +19,11 @@
 %       nu      : Security rank
 %      mat_size : Give a name to your matrix size for easier identification of output
 
-%       Wtheo, Htheo        : Simulation of theoretical matrix Wtheo,Htheo
+%       Gtheo, Htheo        : Simulation of theoretical matrix Gtheo,Htheo
 %       Vtheo               : simulation of theoretical data matrix Vtheo
 %       N                   : simulating noise matrice N
 %       X = Xtheo+N         : simulating data matrix X
-%       Winit,Hinit         : Matrix initialisation
+%       Ginit,Hinit         : Matrix initialisation
 %       SNR                 : Signal to Noise Ratio
 %       compressionLevel    : Compression Level, Default=20. See: Mariano
 %                             Tepper and Guillermo Sapiro, Compressed Nonnegative
@@ -44,13 +44,13 @@ for i =1:Total_Tests
     
     rng(i)
   
-    Wtheo = 10*rand(m,r);
+    Gtheo = 10*rand(m,r);
     Htheo = 10*rand(r,n);
     
-    Vtheo = Wtheo*Htheo;
+    Vtheo = Gtheo*Htheo;
     
     rng(200+i)
-    Winit = rand(m,r);
+    Ginit = rand(m,r);
     Hinit = rand(r,n);
   
     compressionLevel = 20;
@@ -60,7 +60,7 @@ for i =1:Total_Tests
     SNR = snr(Vtheo,N);
     X=Vtheo+N;
    
-    save( ['../synthetic_data/data_',mat_size,'_',int2str(i),'.mat'] ,'X','SNR','N' ,'Wtheo' , 'Htheo' , 'Winit' , 'Hinit' , 'Vtheo','compressionLevel','nu','r' )
+    save( ['../synthetic_data/data_',mat_size,'_',int2str(i),'.mat'] ,'X','SNR','N' ,'Gtheo' , 'Htheo' , 'Ginit' , 'Hinit' , 'Vtheo','compressionLevel','nu','r' )
     
     
 end

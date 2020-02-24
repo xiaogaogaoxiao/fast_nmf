@@ -28,7 +28,7 @@
 % Note: another file 'stop_rule.m' should be included under the same
 % directory as this code.
 
-function [G,H,RRE,T]=RSI_NeNMF( X,G,H,r,Tmax)
+function [G,H,RRE,T]=RSI_W_NeNMF( X,G,H,r,Tmax)
 MinIter=10;
 tol=1e-5;
 T=zeros(1,301);
