@@ -1,36 +1,31 @@
-# History files
-.Rhistory
-.Rapp.history
+# Windows default autosave extension
+*.asv
 
-# Session Data files
-.RData
+# OSX / *nix default autosave extension
+*.m~
 
-# User-specific files
-.Ruserdata
+# Compiled MEX binaries (all platforms)
+*.mex*
 
-# Example code in package build process
-*-Ex.R
+# Packaged app and toolbox files
+*.mlappinstall
+*.mltbx
 
-# Output files from R CMD build
-/*.tar.gz
+# Generated helpsearch folders
+helpsearch*/
 
-# Output files from R CMD check
-/*.Rcheck/
+# Simulink code generation folders
+slprj/
+sccprj/
 
-# RStudio files
-.Rproj.user/
+# Matlab code generation folders
+codegen/
 
-# produced vignettes
-vignettes/*.html
-vignettes/*.pdf
+# Simulink autosave extension
+*.autosave
 
-# OAuth2 token, see https://github.com/hadley/httr/releases/tag/v0.3
-.httr-oauth
+# Simulink cache files
+*.slxc
 
-# knitr and R markdown default cache directories
-*_cache/
-/cache/
-
-# Temporary files created by R markdown
-*.utf8.md
-*.knit.md
+# Octave session info
+octave-workspace
