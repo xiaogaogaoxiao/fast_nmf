@@ -1,6 +1,6 @@
 # Faster-than-fast NMF using random projections and Nesterov iterations
 ## by Farouk Yahaya, Matthieu Puigt, Gilles Delmaire, and Gilles Roussel
-## modified by Olivier Vu thanh
+# modified by Olivier Vu thanh
 
 -----
 
@@ -8,8 +8,9 @@
 Random projections have been recently implemented in Nonnegative Matrix Factorization (NMF) to speed-up the NMF computations, with a negligible loss of performance. In this paper, we investigate the effects of such projections when the NMF technique uses the fast Nesterov gradient descent (NeNMF). We experimentally show that structured random projections significantly speed-up NeNMF for very large data matrices. 
 
 ### Download
-[Download the Matlab code of the proposed NeNMF method with random projections](https://gogs.univ-littoral.fr/puigt/Faster-than-fast_NMF/src/master/Code).
+[Download the Matlab code of the proposed NeNMF method with random projections](https://github.com/vuthanho/fast_nmf).
 The code was written by Farouk YAHAYA and is maintained by Farouk YAHAYA, Matthieu PUIGT, Gilles DELMAIRE, and Gilles ROUSSEL (firstname.LASTNAME [at] univ-littoral.fr).
+This code is modifed by Olivier VU THANH (firstname.last-name [at] grenoble-inp.org)
 
 It contains several functions and **folders**:
 
