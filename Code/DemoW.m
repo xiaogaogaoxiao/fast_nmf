@@ -17,8 +17,8 @@
 
 clear
 clc
-Tmax =15;
-Total_Tests=1;
+Tmax =10;
+Total_Tests=40;
 
 
 
@@ -28,19 +28,19 @@ for i=1:Total_Tests
                         % your mxn matrix size as desired.
     
     
-%     % Randomized Subspace Iterations (NeNMF) 
+    % Randomized Subspace Iterations (NeNMF) 
     
     clearvars -except i Tmax mat_size Total_Tests;
    load( ['synthetic_data/data_',mat_size,'_',int2str(i),'.mat'])
-   
-    [ G_RSI_W_NeNMF , H_RSI_W_NeNMF,RRE_RSI_W_NeNMF, T_RSI_W_NeNMF] = RSI_W_NeNMF(X, Ginit , Hinit ,r, Tmax);
+
+    [ G_RSI_W_NeNMF , H_RSI_W_NeNMF,RRE_RSI_W_NeNMF, T_RSI_W_NeNMF] = RSI_W_NeNMF(X, W, Ginit , Hinit ,r, Tmax);
    save( ['../output/RSI_W_NeNMF_',mat_size,'_',int2str(i),'.mat'], 'RRE_RSI_W_NeNMF', 'T_RSI_W_NeNMF', '-v7.3' )
   
-    % VANILA NeNMF
-    clearvars -except i Tmax mat_size Total_Tests;
-   load( ['synthetic_data/data_',mat_size,'_',int2str(i),'.mat'])
-    [ G_VANILLA , H_VANILLA,RRE_VANILLA_W_NeNMF, T_VANILLA_W_NeNMF ] = VANILLA_W_NeNMF(X , Ginit , Hinit,Tmax );
-   save( ['../output/VANILLA_W_NeNMF_',mat_size,'_',int2str(i),'.mat'], 'RRE_VANILLA_W_NeNMF', 'T_VANILLA_W_NeNMF', '-v7.3' )
+%     % VANILA NeNMF
+%     clearvars -except i Tmax mat_size Total_Tests;
+%    load( ['synthetic_data/data_',mat_size,'_',int2str(i),'.mat'])
+%     [ G_VANILLA , H_VANILLA,RRE_VANILLA_W_NeNMF, T_VANILLA_W_NeNMF ] = VANILLA_W_NeNMF(X, W, Ginit , Hinit,Tmax );
+%    save( ['../output/VANILLA_W_NeNMF_',mat_size,'_',int2str(i),'.mat'], 'RRE_VANILLA_W_NeNMF', 'T_VANILLA_W_NeNMF', '-v7.3' )
 
     disp( ['iter:',int2str(i), ' of ', mat_size , '   OK!'] )
     

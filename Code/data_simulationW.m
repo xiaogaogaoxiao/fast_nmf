@@ -17,12 +17,14 @@
 %       X       : Input data matrix (m x n)
 %       r       : Target low-rank
 %       nu      : Security rank
+%       p       : Proportion of missing data
 %      mat_size : Give a name to your matrix size for easier identification of output
 
 %       Gtheo, Htheo        : Simulation of theoretical matrix Gtheo,Htheo
 %       Vtheo               : simulation of theoretical data matrix Vtheo
 %       N                   : simulating noise matrice N
 %       X = Xtheo+N         : simulating data matrix X
+%       W                   : Weight matrix (only 0s and 1s)
 %       Ginit,Hinit         : Matrix initialisation
 %       SNR                 : Signal to Noise Ratio
 %       compressionLevel    : Compression Level, Default=20. See: Mariano
@@ -43,7 +45,8 @@ for i =1:Total_Tests
     nu=10;
     p = 0.6; 
     rng(i)
-    
+    W = rand(m,n);
+    W = W>p;
     Gtheo = 10*rand(m,r);
     Htheo = 10*rand(r,n);
     
@@ -60,7 +63,7 @@ for i =1:Total_Tests
     SNR = snr(Vtheo,N);
     X=Vtheo+N;
    
-    save( ['../synthetic_data/data_',mat_size,'_',int2str(i),'.mat'] ,'X','SNR','N' ,'Gtheo' , 'Htheo' , 'Ginit' , 'Hinit' , 'Vtheo','compressionLevel','nu','r' )
+    save( ['../synthetic_data/data_',mat_size,'_',int2str(i),'.mat'] ,'X','W','SNR','N' ,'Gtheo' , 'Htheo' , 'Ginit' , 'Hinit' , 'Vtheo','compressionLevel','nu','r' )
     
     
 end

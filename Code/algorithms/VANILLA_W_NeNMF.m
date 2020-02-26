@@ -35,7 +35,7 @@
 
 
 
-function [G,H,RRE,T]=VANILLA_W_NeNMF(X,G, H,Tmax)
+function [G,H,RRE,T]=VANILLA_W_NeNMF(X,W,G, H,Tmax)
 MinIter=10;
 
 tol=1e-5;
@@ -46,11 +46,11 @@ RRE=zeros(1,301);
 ITER_MAX=500;      % maximum inner iteration number (Default)
 ITER_MIN=10;        % minimum inner iteration number (Default)
 
-HVt=H*X'; HHt=H*H';
-GtV=G'*X; GtG=G'*G;
+GtX=G'*X; GtG=G'*G;
 
-GradG=G*HHt-HVt';
-GradH=GtG*H-GtV;
+WWGHmX = W.*W.*(G*H-X);
+GradG=WWGHmX*H';
+GradH=G'*WWGHmX;
 
 init_delta=stop_rule([G',H],[GradG',GradH]);
 tolH=max(tol,1e-3)*init_delta;
@@ -66,21 +66,21 @@ T(k) = 0;
 while(toc<= Tmax+0.05)
       
     % Optimize H with G fixed
-    [H,iterH]=NNLS(H,GtG,GtV,ITER_MIN,ITER_MAX,tolH);
+    [H,iterH]=NNLS(H,GtG,GtX,ITER_MIN,ITER_MAX,tolH);
     
     if iterH<=ITER_MIN
         tolH=tolH/10;
     end
     
-    HHt=H*H';   HVt=H*X';
+    HHt=H*H';   HXt=H*X';
     
     % Optimize G with H fixed
-    [G,iterG,GradG]=NNLS(G,HHt,HVt,ITER_MIN,ITER_MAX,tolG);
+    [G,iterG,GradG]=NNLS(G,HHt,HXt,ITER_MIN,ITER_MAX,tolG);
     if iterG<=ITER_MIN
         tolG=tolG/10;
     end
-    GtG=G*G'; GtV=G*X;
-    GradH=GtG*H-GtV;
+    GtG=G*G'; GtX=G*X;
+    GradH=GtG*H-GtX;
     %     HIS.niter=niter+iterH+iterG;
     delta=stop_rule([G,H],[GradG,GradH]);
     % Output running detials
@@ -98,11 +98,10 @@ while(toc<= Tmax+0.05)
     
 end  %end of  loop
 
-
 G=G';
 return;
 
-function [H,iter,Grad]=NNLS(Z,GtG,GtV,iterMin,iterMax,tol)
+function [H,iter,Grad]=NNLS(Z,GtG,GtX,iterMin,iterMax,tol)
 
 
 if ~issparse(GtG)
@@ -111,7 +110,7 @@ else
     L=norm(full(GtG));
 end
 H=Z;    % Initialization
-Grad=GtG*Z-GtV;     % Gradient
+Grad=GtG*Z-GtX;     % Gradient
 alpha1=1;
 
 for iter=1:iterMax
@@ -120,7 +119,7 @@ for iter=1:iterMax
     alpha2=0.5*(1+sqrt(1+4*alpha1^2));
     Z=H+((alpha1-1)/alpha2)*(H-H0);
     alpha1=alpha2;
-    Grad=GtG*Z-GtV;
+    Grad=GtG*Z-GtX;
     
     % Stopping criteria
     if iter>=iterMin
@@ -132,19 +131,18 @@ for iter=1:iterMax
     end
 end
 
-Grad=GtG*H-GtV;
-
+Grad=GtG*H-GtX;
 return;
+
 function f = nmf_norm_fro(X, G, H)
 % Author : F. Yahaya
 % Date: 13/04/2018
 % Contact: farouk.yahaya@univ-littoral.fr
-% Goal: compute a normalized error reconstruction of the mixing matrix V
+% Goal: compute a normalized error reconstruction of the mixing matrix X
 % "Normalized" means that we divide the squared Frobenius norm of the error
-% by the squared Frobenius norm of the matrix V
+% by the squared Frobenius norm of the matrix X
 % Note: To express the error in dB, you have to compute 10*log10(f)
 %
 
 f = norm(X - G * H,'fro')^2/norm(X,'fro')^2;
-
 return;
